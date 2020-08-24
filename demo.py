@@ -104,6 +104,7 @@ def test(epoch):
   test_acc = 100. * correct / len(test_loader.dataset)
   if test_acc > best_test_acc:
     best_test_acc = test_acc
+    torch.save(model.state_dict(), 'model/model_state.pth')
     print('best test accuracy: {:.2f}%'.format(best_test_acc))
 
   print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(

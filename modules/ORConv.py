@@ -7,6 +7,7 @@ from torch.nn.modules import Conv2d
 from torch.nn.modules.utils import _pair
 from ..functions import active_rotating_filter
 
+
 class ORConv2d(Conv2d):
   def __init__(self, in_channels, out_channels, arf_config, kernel_size, stride=1,
          padding=0, dilation=1, groups=1, bias=True):
