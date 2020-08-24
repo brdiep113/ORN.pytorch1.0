@@ -41,5 +41,6 @@ def visualize_feature_map(path):
         plt.savefig('../visualize_layers/filter.png')
     plt.show()
 
+
 if __name__ == "__main__":
-    visualize_feature_map()
+    visualize_feature_map('model/model_state.pth')
