@@ -2,11 +2,11 @@ import torch
 import torch.nn as nn
 from model import Net
 import matplotlib.pyplot as plt
+from torchvision import datasets, transforms
+from dataset import RandomRotate
 
-model = Net()
 
-
-def visualize_feature_map(path):
+def visualize_feature_map(path, img, img_num):
     model = Net()
     model.load_state_dict(torch.load(path))
 
@@ -33,14 +33,44 @@ def visualize_feature_map(path):
                         conv_layers.append(child)
     print(f"Total convolutional layers: {counter}")
 
-    plt.figure(figsize=(30, 30))
-    for i, filter in enumerate(model_weights[0]):
-        plt.subplot(26, 26, i + 1)  # (8, 8) because in conv0 we have 7x7 filters and total of 64 (see printed shapes)
-        plt.imshow(filter[0, :, :].detach(), cmap='gray')
-        plt.axis('off')
-        plt.savefig('../visualize_layers/filter.png')
-    plt.show()
+    # pass the image through all the layers
+    results = [conv_layers[0](img)]
+    for i in range(1, len(conv_layers)):
+        # pass the result from the last layer to the next layer
+        results.append(conv_layers[i](results[-1]))
+    # make a copy of the `results`
+    outputs = results
+
+    # visualize 64 features from each layer
+    # (although there are more feature maps in the upper layers)
+    for num_layer in range(len(outputs)):
+        plt.figure(figsize=(30, 30))
+        layer_viz = outputs[num_layer][0, :, :, :]
+        layer_viz = layer_viz.data
+        print(layer_viz.size())
+        for i, filter in enumerate(layer_viz):
+            if i == 64:  # we will visualize only 8x8 blocks from each layer
+                break
+            plt.subplot(8, 8, i + 1)
+            plt.imshow(filter, cmap='gray')
+            plt.axis("off")
+        print(f"Saving image {img_num} layer {num_layer} feature maps...")
+        plt.savefig(f"../outputs/{img_num}layer_{num_layer}.png")
+        # plt.show()
+        plt.close()
 
 
 if __name__ == "__main__":
-    visualize_feature_map('model/model_state.pth')
+
+    mnist_train_dataset = datasets.MNIST('data', train=True, download=True, transform=transforms.Compose([
+        transforms.Scale(32), RandomRotate((-180, 180)), transforms.ToTensor(),
+        transforms.Normalize((0.1307,), (0.3081,))]))
+
+    train_loader = torch.utils.data.DataLoader(mnist_train_dataset,
+                                               batch_size=1,
+                                               shuffle=True)
+
+    img_num = 0
+    for img, _ in train_loader:
+        visualize_feature_map('model/model_state.pth', img, img_num)
+        img += 1
