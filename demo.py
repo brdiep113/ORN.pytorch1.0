@@ -110,6 +110,7 @@ def test(epoch):
   print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
     test_loss, correct, len(test_loader.dataset), test_acc))
 
+
 for epoch in range(1, args.epochs + 1):
   train(epoch)
   test(epoch)
