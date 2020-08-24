@@ -5,7 +5,6 @@ import numbers
 import random
 import argparse
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset
@@ -15,6 +14,8 @@ from tqdm import tqdm
 from torchvision import datasets, transforms
 from functions import rotation_invariant_encoding
 from modules.ORConv import ORConv2d
+from model import Net
+from dataset import RandomRotate
 
 # Training settings
 parser = argparse.ArgumentParser(description='ORN.PyTorch MNIST Example')
@@ -36,20 +37,6 @@ parser.add_argument('--orientation', type=int, default=8, metavar='O',
                     help='nOrientation for ARFs (default: 8)')
 
 
-class toyDataset(Dataset):
-  def __init__(self, num_samples = 10000):
-    super(toyDataset, self).__init__()
-    self.num_samples = num_samples
-  
-  def __len__(self):
-    return self.num_samples
-
-  def __getitem__(self, index):
-    assert index < len(self), 'index range error'
-    image = torch.randn(1, 32, 32)
-    label = torch.randint(0,10,(1,)).item()
-    return image, label
-
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -57,45 +44,22 @@ torch.manual_seed(args.seed)
 if args.cuda:
   torch.cuda.manual_seed(args.seed)
 
+kwargs = {'num_works': 1, 'pin_memory': True} if args.cuda else {}
+mnist_train_dataset = datasets.MNIST('data', train=True, download=True, transform=transforms.Compose([
+  transforms.Scale(32), RandomRotate((-180, 180)), transforms.ToTensor(),
+  transforms.Normalize((0.1307,), (0.3081,))]))
 
-train_loader = torch.utils.data.DataLoader(toyDataset(10000),
+mnist_test_dataset = datasets.MNIST('data', train=False, transform=transforms.Compose([
+  transforms.Scale(32), RandomRotate((-180, 180)), transforms.ToTensor(),
+  transforms.Normalize((0.1307,), (0.3081,))]))
+
+train_loader = torch.utils.data.DataLoader(mnist_train_dataset,
                                            batch_size=args.batch_size,
                                            shuffle=True)
-test_loader = torch.utils.data.DataLoader(toyDataset(100),
+test_loader = torch.utils.data.DataLoader(mnist_test_dataset,
                                           batch_size=args.batch_size,
                                           shuffle=False)
 
-class Net(nn.Module):
-  def __init__(self, use_arf=False, nOrientation=8):
-    super(Net, self).__init__()
-    self.use_arf = use_arf
-    self.nOrientation = nOrientation
-    if use_arf:
-      self.conv1 = ORConv2d(1, 10, arf_config=(1,nOrientation), kernel_size=3)
-      self.conv2 = ORConv2d(10, 20, arf_config=nOrientation,kernel_size=3)
-      self.conv3 = ORConv2d(20, 40, arf_config=nOrientation,kernel_size=3, stride=1, padding=1)
-      self.conv4 = ORConv2d(40, 80, arf_config=nOrientation,kernel_size=3)
-    else:
-      self.conv1 = nn.Conv2d(1, 80, kernel_size=3)
-      self.conv2 = nn.Conv2d(80, 160, kernel_size=3)
-      self.conv3 = nn.Conv2d(160, 320, kernel_size=3, stride=1, padding=1)
-      self.conv4 = nn.Conv2d(320, 640, kernel_size=3)
-    self.fc1 = nn.Linear(640, 1024)
-    self.fc2 = nn.Linear(1024, 10)
-
-
-  def forward(self, x):
-    x = F.max_pool2d(F.relu(self.conv1(x)), 2)
-    x = F.max_pool2d(F.relu(self.conv2(x)), 2)
-    x = F.max_pool2d(F.relu(self.conv3(x)), 2)
-    x = F.relu(self.conv4(x))
-    if self.use_arf:
-        x = rotation_invariant_encoding(x, self.nOrientation)
-    x = x.view(-1, 640)
-    x = F.relu(self.fc1(x))
-    x = F.dropout(x, training=self.training)
-    x = self.fc2(x)
-    return F.log_softmax(x, dim=1)
 
 model = Net(args.use_arf, args.orientation)
 print(model)
@@ -119,6 +83,7 @@ def train(epoch):
   print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
     epoch, batch_idx * len(data), len(train_loader.dataset),
     100. * batch_idx / len(train_loader), loss.item()))
+
 
 def test(epoch):
   global best_test_acc
