@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 from torch.nn.modules import Conv2d
 from torch.nn.modules.utils import _pair
-from ..functions import active_rotating_filter
+from functions.active_rotating_filter import active_rotating_filter
 
 
 class ORConv2d(Conv2d):
