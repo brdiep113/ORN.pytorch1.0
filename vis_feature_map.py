@@ -23,7 +23,7 @@ loader = DataLoader(
 )
 
 model = Net()
-criterion = nn.BCEWithLogitsLoss()
+criterion = F.nll_loss()
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
 epochs = 1
