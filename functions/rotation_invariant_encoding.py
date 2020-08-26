@@ -5,7 +5,7 @@ from torch.autograd import Function
 from torch.autograd.function import once_differentiable
 from torch.nn.modules.utils import _pair
 
-from .. import _C
+import torch._C as _C
 
 
 class _RotationInvariantEncoding(Function):
