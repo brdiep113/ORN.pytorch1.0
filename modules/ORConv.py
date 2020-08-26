@@ -21,12 +21,12 @@ class ORConv2d(Conv2d):
     self.register_buffer("indices", self.get_indices())
     # re-create weight/bias
     with torch.no_grad():
-      self.weight.resize(out_channels, in_channels, self.nOrientation, *self.kernel_size)
+      self.weight.resize(out_channels, in_channels, self.nOrientation, *self.kernel_size).copy_(self.weight)
     # self.weight.data.resize_(out_channels, in_channels, self.nOrientation, *self.kernel_size)
     if bias:
       with torch.no_grad():
         # self.bias.data.resize_(out_channels * self.nRotation)
-        self.bias.resize(out_channels * self.nRotation)
+        self.bias.resize(out_channels * self.nRotation).copy_(self.bias)
     self.reset_parameters()
 
   def reset_parameters(self):
