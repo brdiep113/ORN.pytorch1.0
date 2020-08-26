@@ -14,7 +14,7 @@ from tqdm import tqdm
 from torchvision import datasets, transforms
 from functions import rotation_invariant_encoding
 from modules.ORConv import ORConv2d
-from model import Net
+from model.model import Net
 from dataset import RandomRotate
 
 # Training settings

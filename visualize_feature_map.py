@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from model import Net
+from model.model import Net
 import matplotlib.pyplot as plt
 from torchvision import datasets, transforms
 from dataset import RandomRotate
