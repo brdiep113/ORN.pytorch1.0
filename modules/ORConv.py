@@ -20,9 +20,13 @@ class ORConv2d(Conv2d):
       stride, padding, dilation, groups, bias)
     self.register_buffer("indices", self.get_indices())
     # re-create weight/bias
-    self.weight.data.resize_(out_channels, in_channels, self.nOrientation, *self.kernel_size)
+    with torch.no_grad():
+      self.weight.resize(out_channels, in_channels, self.nOrientation, *self.kernel_size)
+    # self.weight.data.resize_(out_channels, in_channels, self.nOrientation, *self.kernel_size)
     if bias:
-      self.bias.data.resize_(out_channels * self.nRotation)
+      with torch.no_grad():
+        # self.bias.data.resize_(out_channels * self.nRotation)
+        self.bias.resize(out_channels * self.nRotation)
     self.reset_parameters()
 
   def reset_parameters(self):
