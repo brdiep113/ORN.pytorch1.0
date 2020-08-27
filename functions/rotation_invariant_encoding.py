@@ -4,8 +4,10 @@ from torch import nn
 from torch.autograd import Function
 from torch.autograd.function import once_differentiable
 from torch.nn.modules.utils import _pair
-
-import torch._C as _C
+# import sys
+# sys.path.append("..")
+# import torch._C as _C
+import _C
 
 
 class _RotationInvariantEncoding(Function):

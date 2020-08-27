@@ -68,7 +68,7 @@ model = Net(args.use_arf, args.orientation)
 criterion = F.nll_loss()
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
-epochs = 200
+epochs = 10
 for epoch in range(1, epochs+1):
     model.train()
     for batch_idx, (data, target) in enumerate(tqdm(train_loader)):

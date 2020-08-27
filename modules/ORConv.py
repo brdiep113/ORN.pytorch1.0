@@ -10,7 +10,7 @@ from functions.active_rotating_filter import active_rotating_filter
 
 class ORConv2d(Conv2d):
   def __init__(self, in_channels, out_channels, arf_config, kernel_size, stride=1,
-         padding=0, dilation=1, groups=1, bias=True):
+         padding=0, dilation=1, groups=1, bias=False):
     self.nOrientation, self.nRotation = _pair(arf_config)
     assert (math.log(self.nOrientation) + 1e-5) % math.log(2) < 1e-3, 'invalid nOrientation {}'.format(self.nOrientation)
     assert (math.log(self.nRotation) + 1e-5) % math.log(2) < 1e-3, 'invalid nRotation {}'.format(self.nRotation)
@@ -20,13 +20,11 @@ class ORConv2d(Conv2d):
       stride, padding, dilation, groups, bias)
     self.register_buffer("indices", self.get_indices())
     # re-create weight/bias
-    with torch.no_grad():
-      self.weight.resize(out_channels, in_channels, self.nOrientation, *self.kernel_size).copy_(self.weight)
-    # self.weight.data.resize_(out_channels, in_channels, self.nOrientation, *self.kernel_size)
+    self.weight.data.resize_(out_channels, in_channels, self.nOrientation, *self.kernel_size)
+
     if bias:
-      with torch.no_grad():
-        # self.bias.data.resize_(out_channels * self.nRotation)
-        self.bias.resize(out_channels * self.nRotation).copy_(self.bias)
+        print(self.bias.size())
+        self.bias.resize(out_channels * self.nRotation)
     self.reset_parameters()
 
   def reset_parameters(self):

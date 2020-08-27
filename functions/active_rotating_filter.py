@@ -4,9 +4,10 @@ from torch import nn
 from torch.autograd import Function
 from torch.autograd.function import once_differentiable
 from torch.nn.modules.utils import _pair
-
-# from .. import _C
-import torch._C as _C
+# import sys
+# sys.path.append("..")
+import _C
+# import torch._C as _C
 
 
 class _ActiveRotatingFilter(Function):
@@ -93,3 +94,4 @@ if __name__ == "__main__":
   print(output.size())
   res = torch.autograd.gradcheck(active_rotating_filter, (input, indices), raise_exception=True)
   print(res)
+
