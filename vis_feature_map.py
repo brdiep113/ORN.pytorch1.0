@@ -65,24 +65,11 @@ test_loader = DataLoader(
 )
 
 model = Net(args.use_arf, args.orientation)
+model.load_state_dict(torch.load('model/model_state.pth'))
 criterion = F.nll_loss()
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
-
-epochs = 10
-for epoch in range(1, epochs+1):
-    model.train()
-    for batch_idx, (data, target) in enumerate(tqdm(train_loader)):
-        if args.cuda:
-            data, target = data.cuda(), target.cuda()
-        optimizer.zero_grad()
-        output = model(data)
-        loss = F.nll_loss(output, target)
-        loss.backward()
-        optimizer.step()
-        # if batch_idx % args.log_interval == 0:
-    print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-        epoch, batch_idx * len(data), len(train_loader.dataset),
-               100. * batch_idx / len(train_loader), loss.item()))
+data = mnist_train_dataset.data[0]
+output = model(data)
 
 
 def normalize_output(img):
