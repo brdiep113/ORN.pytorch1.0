@@ -6,7 +6,6 @@ import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from model.model import Net
-from demo import train
 import tqdm
 
 import torchvision.transforms as transforms
@@ -67,7 +66,6 @@ test_loader = DataLoader(
 model = Net(args.use_arf, args.orientation)
 model.load_state_dict(torch.load('model/model_state.pth'))
 print('Model loaded!')
-criterion = F.nll_loss()
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 data = mnist_train_dataset[0]
 output = model(data)
