@@ -63,12 +63,11 @@ test_loader = DataLoader(
     shuffle=True
 )
 
-model = Net(args.use_arf, args.orientation)
+model = Net()
 model.load_state_dict(torch.load('model/model_state.pth'))
 print('Model loaded!')
-optimizer = optim.Adam(model.parameters(), lr=1e-3)
-data = mnist_train_dataset[0]
-output = model(data)
+a, _ = mnist_train_dataset[0]
+output = model(a)
 
 
 def normalize_output(img):
@@ -80,7 +79,7 @@ def normalize_output(img):
 # Plot some images
 idx = torch.randint(0, output.size(0), ())
 pred = normalize_output(output[idx, 0])
-img = data[idx, 0]
+img = a[idx, 0]
 
 fig, axarr = plt.subplots(1, 2)
 axarr[0].imshow(img.detach().numpy())
