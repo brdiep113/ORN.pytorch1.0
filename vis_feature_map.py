@@ -67,6 +67,7 @@ model = Net()
 model.load_state_dict(torch.load('model/model_state.pth'))
 print('Model loaded!')
 a, _ = mnist_train_dataset[0]
+a.unsqueeze_(0)
 output = model(a)
 
 
