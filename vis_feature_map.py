@@ -53,7 +53,7 @@ test_loader = torch.utils.data.DataLoader(mnist_test_dataset,
                                           batch_size=1,
                                           shuffle=False)
 
-model = Net(use_arf=args.use_arf)
+model = Net(use_arf=args.use_arf).cuda()
 model.load_state_dict(torch.load('model/model_state.pth'))
 print('Model loaded!')
 # print(mnist_test_dataset[0])
@@ -97,8 +97,9 @@ print(data.shape)
 output = model(data)
 
 act = activation['conv1'].squeeze()
+act = act.cpu()
 fig, axarr = plt.subplots(act.size(0))
 for idx in range(act.size(0)):
     axarr[idx].imshow(act[idx])
 
-axarr.savefig('feature_map.png', bbox_inches='tight', pad_inches=0)
+fig.savefig('feature_map.png', bbox_inches='tight', pad_inches=0)
