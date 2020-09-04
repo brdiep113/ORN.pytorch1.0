@@ -49,26 +49,17 @@ mnist_test_dataset = datasets.MNIST('data', train=False, transform=transforms.Co
   transforms.Scale(32), RandomRotate((-180, 180)), transforms.ToTensor(),
   transforms.Normalize((0.1307,), (0.3081,))]))
 
-train_loader = DataLoader(
-    mnist_train_dataset,
-    num_workers=2,
-    batch_size=8,
-    shuffle=True
-)
+test_loader = torch.utils.data.DataLoader(mnist_test_dataset,
+                                          batch_size=1,
+                                          shuffle=False)
 
-test_loader = DataLoader(
-    mnist_test_dataset,
-    num_workers=2,
-    batch_size=8,
-    shuffle=True
-)
-
-model = Net()
+model = Net(use_arf=args.use_arf)
 model.load_state_dict(torch.load('model/model_state.pth'))
 print('Model loaded!')
-a, _ = mnist_train_dataset[0]
-a.unsqueeze_(0)
-output = model(a)
+# print(mnist_test_dataset[0])
+# a, _ = mnist_test_dataset[0]
+# a.unsqueeze_(0)
+# output = model(a)
 
 
 def normalize_output(img):
@@ -78,13 +69,12 @@ def normalize_output(img):
 
 
 # Plot some images
-idx = torch.randint(0, output.size(0), ())
-pred = normalize_output(output[idx, 0])
-img = a[idx, 0]
-
-fig, axarr = plt.subplots(1, 2)
-axarr[0].imshow(img.detach().numpy())
-axarr[1].imshow(pred.detach().numpy())
+# idx = torch.randint(0, 100, ())
+# pred = normalize_output(output[idx, 0])
+# img = a[idx, 0]
+# fig, axarr = plt.subplots(1, 2)
+# axarr[0].imshow(img.detach().numpy())
+# axarr[1].imshow(pred.detach().numpy())
 
 # Visualize feature maps
 activation = {}
@@ -96,10 +86,14 @@ def get_activation(name):
 
     return hook
 
-
+print(model)
 model.conv1.register_forward_hook(get_activation('conv1'))
-data, _ = mnist_test_dataset[0]
-data.unsqueeze_(0)
+for data, target in test_loader:
+    if args.cuda:
+      data, target = data.cuda(), target.cuda()
+    break
+
+print(data.shape)
 output = model(data)
 
 act = activation['conv1'].squeeze()

@@ -6,7 +6,7 @@ from modules import ORConv2d
 
 class Net(nn.Module):
 
-  def __init__(self, use_arf=True, nOrientation=8):
+  def __init__(self, use_arf=False, nOrientation=8):
     super(Net, self).__init__()
     self.use_arf = use_arf
     self.nOrientation = nOrientation
