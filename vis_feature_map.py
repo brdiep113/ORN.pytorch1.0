@@ -111,8 +111,10 @@ act = activation['conv1'].squeeze()
 act = act.cpu()
 print(act.size)
 print(act.shape)
+print(act.size(0))
 fig, axarr = plt.subplots(act.size(0))
 for idx in range(act.size(0)):
+
     axarr[idx].imshow(act[idx])
 
 fig.savefig('feature_map.png', bbox_inches='tight', pad_inches=0)
