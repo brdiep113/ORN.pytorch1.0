@@ -101,7 +101,7 @@ print(data.shape)
 img = data
 
 fig, axarr = plt.subplots(1, 2)
-# axarr[0].imshow(img.detach().numpy())
+axarr[0].imshow(img.detach().numpy())
 # axarr[1].imshow(pred.detach().numpy())
 
 
