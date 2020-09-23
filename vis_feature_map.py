@@ -98,7 +98,9 @@ output = model(data)
 print(output.shape)
 # pred = normalize_output(output[idx, 0])
 print(data.shape)
-img = data
+
+img = data[0, 0]
+img = img.cpu()
 
 fig, axarr = plt.subplots(1, 2)
 axarr[0].imshow(img.detach().numpy())
