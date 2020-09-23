@@ -93,11 +93,13 @@ for data, target in test_loader:
       data, target = data.cuda(), target.cuda()
     break
 
-print(data.shape)
+# print(data.shape)
 output = model(data)
 
 act = activation['conv1'].squeeze()
 act = act.cpu()
+print(act.size)
+print(act.shape)
 fig, axarr = plt.subplots(act.size(0))
 for idx in range(act.size(0)):
     axarr[idx].imshow(act[idx])

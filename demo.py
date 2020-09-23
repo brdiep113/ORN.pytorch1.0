@@ -75,7 +75,7 @@ def train(epoch):
     if args.cuda:
       data, target = data.cuda(), target.cuda()
     optimizer.zero_grad()
-    print(data.shape)
+    # print(data.shape)
     output = model(data)
     # print(output)
     loss = F.nll_loss(output, target)
