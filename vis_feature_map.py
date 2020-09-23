@@ -86,7 +86,6 @@ def get_activation(name):
 
     return hook
 
-print(model)
 model.conv1.register_forward_hook(get_activation('conv1'))
 for data, target in test_loader:
     if args.cuda:
@@ -94,7 +93,17 @@ for data, target in test_loader:
     break
 
 # print(data.shape)
+
 output = model(data)
+print(output.shape)
+# pred = normalize_output(output[idx, 0])
+print(data.shape)
+img = data
+
+fig, axarr = plt.subplots(1, 2)
+# axarr[0].imshow(img.detach().numpy())
+# axarr[1].imshow(pred.detach().numpy())
+
 
 act = activation['conv1'].squeeze()
 act = act.cpu()
