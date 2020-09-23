@@ -112,9 +112,10 @@ act = act.cpu()
 print(act.size)
 print(act.shape)
 print(act.size(0))
-fig, axarr = plt.subplots(act.size(0))
-for idx in range(act.size(0)):
 
-    axarr[idx].imshow(act[idx])
+fig, axarr = plt.subplots()
+#for idx in range(act.size(0)):
+#    axarr[idx].imshow(act[idx])
 
+axarr.imshow(act[0])
 fig.savefig('feature_map.png', bbox_inches='tight', pad_inches=0)
