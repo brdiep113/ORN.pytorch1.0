@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from model.model import Net
 import tqdm
+from datetime import datetime
 
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
@@ -118,4 +119,4 @@ fig, axarr = plt.subplots()
 #    axarr[idx].imshow(act[idx])
 
 axarr.imshow(act[0])
-fig.savefig('feature_map.png', bbox_inches='tight', pad_inches=0)
+fig.savefig('feature_map' + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '.png', bbox_inches='tight', pad_inches=0)
